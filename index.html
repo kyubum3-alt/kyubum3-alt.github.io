@@ -354,7 +354,7 @@
         let currentView = { lang: null, category: null };
 
         // 초기화
-        function init() {
+        async function init() {
             // 모든 언어별 카테고리 렌더링
             Object.keys(languages).forEach(lang => {
                 const container = document.getElementById(languages[lang].containerId);
@@ -368,8 +368,9 @@
                 });
             });
 
-            // localStorage에서 데이터 로드
-            loadPosts();
+            // 데이터 로드 (완료 기다림)
+            await loadPosts();
+            updateCategoryCounts();
         }
 
         // 게시글 로드 (JSON 파일 또는 localStorage)
@@ -503,7 +504,4 @@
         }
 
         // 페이지 로드 시 초기화
-        window.addEventListener('load', init);
-    </script>
-</body>
-</html>
+        window.addEventListe
