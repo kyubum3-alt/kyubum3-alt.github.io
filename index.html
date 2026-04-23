@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>역사교육론 연구 자료실</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        header {
+            background-color: #fff;
+            padding: 30px 0;
+            border-bottom: 1px solid #e0e0e0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        h1 {
+            font-size: 1.8em;
+            margin-bottom: 5px;
+            color: #2c3e50;
+        }
+
+        .subtitle {
+            color: #666;
+            font-size: 0.95em;
+        }
+
+        .main-layout {
+            display: flex;
+            max-width: 1400px;
+            margin: 0 auto;
+            gap: 0;
+            min-height: calc(100vh - 150px);
+        }
+
+        .sidebar {
+            width: 280px;
+            background-color: #fff;
+            border-right: 1px solid #e0e0e0;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .content {
+            flex: 1;
+            padding: 30px;
+            background-color: #f8f9fa;
+            overflow-y: auto;
+        }
+
+        .language-group {
+            margin-bottom: 25px;
+        }
+
+        .language-title {
+            font-size: 0.95em;
+            font-weight: bold;
+            color: #2c3e50;
+            padding: 10px 0;
+            border-top: 1px solid #e0e0e0;
+            margin-top: 10px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .language-title:first-child {
+            border-top: none;
+            margin-top: 0;
+        }
+
+        .language-title::before {
+            content: '▼';
+            font-size: 0.7em;
+            display: inline-block;
+        }
+
+        .language-title.collapsed::before {
+            content: '▶';
+        }
+
+        .category-list {
+            margin-top: 8px;
+            padding-left: 8px;
+        }
+
+        .category-item {
+            padding: 8px 12px;
+            margin-bottom: 4px;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+            font-size: 0.9em;
+            border-left: 2px solid transparent;
+            color: #666;
+        }
+
+        .category-item:hover {
+            background-color: #f0f7ff;
+            border-left-color: #3498db;
+            color: #2c3e50;
+        }
+
+        .category-item.active {
+            background-color: #e3f2fd;
+            border-left-color: #3498db;
+            color: #2c3e50;
+            font-weight: 500;
+        }
+
+        .post-list {
+            background-color: #fff;
+            border-radius: 5px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+
+        .list-title {
+            font-size: 1.1em;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #2c3e50;
+            border-bottom: 1px solid #e0e0e0;
+            padding-bottom: 10px;
+        }
+
+        .post-item {
+            padding: 12px;
+            margin-bottom: 8px;
+            background-color: #f8f9fa;
+            border-left: 3px solid #3498db;
+            border-radius: 3px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .post-item:hover {
+            background-color: #e3f2fd;
+        }
+
+        .post-item.active {
+            background-color: #e3f2fd;
+            border-left-color: #2196F3;
+        }
+
+        .post-title {
+            font-weight: 500;
+            margin-bottom: 3px;
+            color: #2c3e50;
+            font-size: 0.95em;
+        }
+
+        .post-meta {
+            font-size: 0.85em;
+            color: #999;
+        }
+
+        .post-detail {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 5px;
+        }
+
+        .post-detail h2 {
+            font-size: 1.5em;
+            margin-bottom: 10px;
+            color: #2c3e50;
+        }
+
+        .post-detail-meta {
+            color: #999;
+            margin-bottom: 25px;
+            font-size: 0.95em;
+        }
+
+        .section-title {
+            font-size: 1.1em;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-top: 25px;
+            margin-bottom: 12px;
+        }
+
+        .summary-box {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 25px;
+            border-left: 3px solid #3498db;
+        }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .original, .translation {
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+            border-left: 3px solid #3498db;
+        }
+
+        .translation {
+            border-left-color: #e74c3c;
+        }
+
+        .content-label {
+            font-weight: bold;
+            margin-bottom: 12px;
+            font-size: 0.95em;
+        }
+
+        .original .content-label {
+            color: #3498db;
+        }
+
+        .translation .content-label {
+            color: #e74c3c;
+        }
+
+        .content-text {
+            white-space: pre-wrap;
+            line-height: 1.8;
+            font-size: 0.95em;
+            color: #444;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 30px;
+            color: #999;
+        }
+
+        .empty-state-icon {
+            font-size: 3em;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+
+        footer {
+            background-color: #fff;
+            text-align: center;
+            padding: 20px;
+            color: #999;
+            border-top: 1px solid #e0e0e0;
+            font-size: 0.9em;
+        }
+
+        @media (max-width: 768px) {
+            .main-layout {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                border-right: none;
+                border-bottom: 1px solid #e0e0e0;
+            }
+
+            .content-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <h1>최규범의 역사교육론 연구 자료실</h1>
+            <p class="subtitle">국내·국제 학술자료 통합 관리 시스템</p>
+        </div>
+    </header>
+
+    <div class="main-layout">
+        <!-- 좌측 사이드바 -->
+        <div class="sidebar">
+            <div class="language-group">
+                <div class="language-title" onclick="toggleLanguage('korean')">국내 논문</div>
+                <div class="category-list" id="korean-categories"></div>
+            </div>
+
+            <div class="language-group">
+                <div class="language-title" onclick="toggleLanguage('spanish')">스페인어권 논문</div>
+                <div class="category-list" id="spanish-categories"></div>
+            </div>
+
+            <div class="language-group">
+                <div class="language-title" onclick="toggleLanguage('english')">영어권 논문</div>
+                <div class="category-list" id="english-categories"></div>
+            </div>
+
+            <div class="language-group">
+                <div class="language-title" onclick="toggleLanguage('spanish-study')">스페인어 공부</div>
+                <div class="category-list" id="spanish-study-categories"></div>
+            </div>
+        </div>
+
+        <!-- 우측 콘텐츠 -->
+        <div class="content">
+            <div id="contentArea">
+                <div class="empty-state">
+                    <div class="empty-state-icon">📚</div>
+                    <p>좌측 메뉴에서 카테고리를 선택하세요.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>© 2026 역사교육론 연구실</p>
+    </footer>
+
+    <script>
+        // 데이터 구조
+        const categories = {
+            korean: ['역사부정', '역사교과서', '다중시각서술', '역사적 사고', '언론 보도'],
+            english: ['역사부정', '역사교과서', '다중시각서술', '역사적 사고', '언론 보도'],
+            spanish: ['역사부정', '역사교과서', '다중시각서술', '역사적 사고', '언론 보도'],
+            'spanish-study': ['RTVE 뉴스']
+        };
+
+        const languages = {
+            korean: { label: '국내 논문', containerId: 'korean-categories' },
+            spanish: { label: '스페인어권 논문', containerId: 'spanish-categories' },
+            english: { label: '영어권 논문', containerId: 'english-categories' },
+            'spanish-study': { label: '스페인어 공부', containerId: 'spanish-study-categories' }
+        };
+
+        // 게시글 데이터
+        let posts = {};
+        let currentView = { lang: null, category: null };
+
+        // 초기화
+        function init() {
+            // 모든 언어별 카테고리 렌더링
+            Object.keys(languages).forEach(lang => {
+                const container = document.getElementById(languages[lang].containerId);
+                const langCategories = categories[lang] || [];
+                langCategories.forEach(category => {
+                    const item = document.createElement('div');
+                    item.className = 'category-item';
+                    item.textContent = category;
+                    item.onclick = () => showPosts(lang, category);
+                    container.appendChild(item);
+                });
+            });
+
+            // localStorage에서 데이터 로드
+            loadPosts();
+        }
+
+        // 게시글 로드 (JSON 파일 또는 localStorage)
+        async function loadPosts() {
+            try {
+                // posts.json 파일에서 로드 시도
+                const response = await fetch('./posts.json');
+                if (response.ok) {
+                    posts = await response.json();
+                    return;
+                }
+            } catch (e) {
+                // JSON 파일 없으면 localStorage 사용
+            }
+
+            // localStorage에서 로드
+            const saved = localStorage.getItem('posts');
+            if (saved) {
+                posts = JSON.parse(saved);
+            }
+        }
+
+        // 게시글 저장 (localStorage)
+        function savePosts() {
+            localStorage.setItem('posts', JSON.stringify(posts));
+        }
+
+        // 데이터 추가 함수 (자동화 스크립트용)
+        function addPost(lang, category, postData) {
+            const key = `${lang}-${category}`;
+            if (!posts[key]) posts[key] = [];
+            posts[key].push(postData);
+            savePosts();
+            updateCategoryCounts();
+        }
+
+        // 언어 그룹 토글
+        function toggleLanguage(lang) {
+            const title = document.querySelector(`.language-title[onclick="toggleLanguage('${lang}')"]`);
+            const list = title.nextElementSibling;
+
+            title.classList.toggle('collapsed');
+            list.style.display = list.style.display === 'none' ? 'block' : 'none';
+        }
+
+        // 게시글 목록 표시
+        function showPosts(lang, category) {
+            const key = `${lang}-${category}`;
+            const categoryPosts = posts[key] || [];
+
+            currentView = { lang, category };
+
+            // 활성 카테고리 표시
+            document.querySelectorAll('.category-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            event.target.classList.add('active');
+
+            let html = `
+                <div class="post-list">
+                    <div class="list-title">${languages[lang].label} > ${category}</div>
+            `;
+
+            if (categoryPosts.length === 0) {
+                html += '<p style="color: #999; padding: 20px; text-align: center;">게시글이 없습니다.</p>';
+            } else {
+                categoryPosts.forEach((post, index) => {
+                    html += `
+                        <div class="post-item" onclick="showPostDetail('${key}', ${index}, event)">
+                            <div class="post-title">${post.title}</div>
+                            <div class="post-meta">${post.date || '-'}</div>
+                        </div>
+                    `;
+                });
+            }
+
+            html += '</div>';
+            document.getElementById('contentArea').innerHTML = html;
+        }
+
+        // 게시글 상세 표시
+        function showPostDetail(key, index, event) {
+            event.stopPropagation();
+
+            const post = posts[key][index];
+            const [lang, category] = key.split('-');
+
+            let html = `
+                <div class="post-detail">
+                    <h2>${post.title}</h2>
+                    <div class="post-detail-meta">${post.date || '-'}</div>
+            `;
+
+            if (post.summary) {
+                html += `
+                    <div class="section-title">요약</div>
+                    <div class="summary-box">
+                        ${post.summary}
+                    </div>
+                `;
+            }
+
+            if (post.original || post.translation) {
+                html += '<div class="section-title">원문 & 번역</div>';
+                html += '<div class="content-grid">';
+
+                if (post.original) {
+                    html += `
+                        <div class="original">
+                            <div class="content-label">원문</div>
+                            <div class="content-text">${post.original}</div>
+                        </div>
+                    `;
+                }
+
+                if (post.translation) {
+                    html += `
+                        <div class="translation">
+                            <div class="content-label">한국어 번역</div>
+                            <div class="content-text">${post.translation}</div>
+                        </div>
+                    `;
+                }
+
+                html += '</div>';
+            }
+
+            html += '</div>';
+
+            document.getElementById('contentArea').innerHTML = html;
+        }
+
+        // 페이지 로드 시 초기화
+        window.addEventListener('load', init);
+    </script>
+</body>
+</html>
