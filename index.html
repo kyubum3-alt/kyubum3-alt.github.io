@@ -419,7 +419,11 @@
         function toggleLanguage(event, lang) {
             event.target.classList.toggle('collapsed');
             const list = event.target.nextElementSibling;
-            list.style.display = list.style.display === 'none' ? 'block' : 'block';
+            if (list.style.display === 'none') {
+                list.style.display = 'block';
+            } else {
+                list.style.display = 'none';
+            }
         }
 
         // 게시글 목록 표시
@@ -488,5 +492,4 @@
                     html += `
                         <div class="translation">
                             <div class="content-label">한국어 번역</div>
-                            <div class="content-text">${post.translation}</div>
-                     
+          
