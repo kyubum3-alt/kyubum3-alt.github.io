@@ -492,4 +492,28 @@
                     html += `
                         <div class="translation">
                             <div class="content-label">한국어 번역</div>
-          
+                            <div class="content-text">${post.translation}</div>
+                        </div>
+                    `;
+                }
+
+                html += '</div>';
+            }
+
+            html += '</div>';
+            document.getElementById('contentArea').innerHTML = html;
+        }
+
+        // 데이터 추가 (외부에서 호출용)
+        function addPost(lang, category, postData) {
+            const key = `${lang}-${category}`;
+            if (!posts[key]) posts[key] = [];
+            posts[key].push(postData);
+            localStorage.setItem('posts', JSON.stringify(posts));
+        }
+
+        // 페이지 로드
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
