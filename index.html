@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>역사교육론 연구 자료실</title>
+    <title>최규범의 역사교육론 연구 자료실</title>
     <style>
         * {
             margin: 0;
@@ -82,6 +82,7 @@
             display: flex;
             align-items: center;
             gap: 8px;
+            user-select: none;
         }
 
         .language-title:first-child {
@@ -93,6 +94,7 @@
             content: '▼';
             font-size: 0.7em;
             display: inline-block;
+            transition: transform 0.2s;
         }
 
         .language-title.collapsed::before {
@@ -156,11 +158,6 @@
 
         .post-item:hover {
             background-color: #e3f2fd;
-        }
-
-        .post-item.active {
-            background-color: #e3f2fd;
-            border-left-color: #2196F3;
         }
 
         .post-title {
@@ -298,22 +295,22 @@
         <!-- 좌측 사이드바 -->
         <div class="sidebar">
             <div class="language-group">
-                <div class="language-title" onclick="toggleLanguage('korean')">국내 논문</div>
+                <div class="language-title" onclick="toggleLanguage(event, 'korean')">국내 논문</div>
                 <div class="category-list" id="korean-categories"></div>
             </div>
 
             <div class="language-group">
-                <div class="language-title" onclick="toggleLanguage('spanish')">스페인어권 논문</div>
+                <div class="language-title" onclick="toggleLanguage(event, 'spanish')">스페인어권 논문</div>
                 <div class="category-list" id="spanish-categories"></div>
             </div>
 
             <div class="language-group">
-                <div class="language-title" onclick="toggleLanguage('english')">영어권 논문</div>
+                <div class="language-title" onclick="toggleLanguage(event, 'english')">영어권 논문</div>
                 <div class="category-list" id="english-categories"></div>
             </div>
 
             <div class="language-group">
-                <div class="language-title" onclick="toggleLanguage('spanish-study')">스페인어 공부</div>
+                <div class="language-title" onclick="toggleLanguage(event, 'spanish-study')">스페인어 공부</div>
                 <div class="category-list" id="spanish-study-categories"></div>
             </div>
         </div>
@@ -334,86 +331,95 @@
     </footer>
 
     <script>
-        // 데이터 구조
-        const categories = {
+        // 카테고리 정의
+        const CATEGORIES = {
             korean: ['역사부정', '역사교과서', '다중시각서술', '역사적 사고', '언론 보도'],
-            english: ['역사부정', '역사교과서', '다중시각서술', '역사적 사고', '언론 보도'],
             spanish: ['역사부정', '역사교과서', '다중시각서술', '역사적 사고', '언론 보도'],
+            english: ['역사부정', '역사교과서', '다중시각서술', '역사적 사고', '언론 보도'],
             'spanish-study': ['RTVE 뉴스']
         };
 
-        const languages = {
-            korean: { label: '국내 논문', containerId: 'korean-categories' },
-            spanish: { label: '스페인어권 논문', containerId: 'spanish-categories' },
-            english: { label: '영어권 논문', containerId: 'english-categories' },
-            'spanish-study': { label: '스페인어 공부', containerId: 'spanish-study-categories' }
+        const LABELS = {
+            korean: '국내 논문',
+            spanish: '스페인어권 논문',
+            english: '영어권 논문',
+            'spanish-study': '스페인어 공부'
         };
 
         // 게시글 데이터
         let posts = {};
-        let currentView = { lang: null, category: null };
 
         // 초기화
-        async function init() {
-            // 모든 언어별 카테고리 렌더링
-            Object.keys(languages).forEach(lang => {
-                const container = document.getElementById(languages[lang].containerId);
-                const langCategories = categories[lang] || [];
-                langCategories.forEach(category => {
-                    const item = document.createElement('div');
-                    item.className = 'category-item';
-                    item.textContent = category;
-                    item.onclick = () => showPosts(lang, category);
-                    container.appendChild(item);
-                });
-            });
-
-            // 데이터 로드 (완료 기다림)
-            await loadPosts();
-            updateCategoryCounts();
+        function init() {
+            loadPosts();
+            renderCategories();
         }
 
-        // 게시글 로드 (JSON 파일 또는 localStorage)
-        async function loadPosts() {
-            try {
-                // posts.json 파일에서 로드 시도
-                const response = await fetch('./posts.json');
-                if (response.ok) {
-                    posts = await response.json();
-                    return;
-                }
-            } catch (e) {
-                // JSON 파일 없으면 localStorage 사용
-            }
-
-            // localStorage에서 로드
+        // posts.json 로드
+        function loadPosts() {
+            // 초기 데이터 (로컬스토리지에서도 확인)
             const saved = localStorage.getItem('posts');
             if (saved) {
-                posts = JSON.parse(saved);
+                try {
+                    posts = JSON.parse(saved);
+                    return;
+                } catch (e) {
+                    console.error('localStorage 파싱 실패:', e);
+                }
             }
-        }
 
-        // 게시글 저장 (localStorage)
-        function savePosts() {
+            // 기본값
+            posts = {
+                'korean-역사부정': [],
+                'korean-역사교과서': [],
+                'korean-다중시각서술': [],
+                'korean-역사적 사고': [],
+                'korean-언론 보도': [],
+                'spanish-역사부정': [],
+                'spanish-역사교과서': [],
+                'spanish-다중시각서술': [],
+                'spanish-역사적 사고': [],
+                'spanish-언론 보도': [],
+                'english-역사부정': [],
+                'english-역사교과서': [],
+                'english-다중시각서술': [
+                    {
+                        'title': 'You Hear about It for Real in School',
+                        'date': '2026-04-23',
+                        'summary': '북아일랜드의 분단된 사회에서 역사 교육이 논쟁적 이슈를 다루는 방식을 연구한 논문.',
+                        'original': 'Teaching history in a divided society like Northern Ireland, where reference to the past is frequently used in a partisan way to justify contemporary political positions, presents teachers with particular challenges.',
+                        'translation': '북아일랜드와 같이 분단된 사회에서 역사를 가르치는 것은 특별한 과제를 제시한다.'
+                    }
+                ],
+                'english-역사적 사고': [],
+                'english-언론 보도': [],
+                'spanish-study-RTVE 뉴스': []
+            };
+
             localStorage.setItem('posts', JSON.stringify(posts));
         }
 
-        // 데이터 추가 함수 (자동화 스크립트용)
-        function addPost(lang, category, postData) {
-            const key = `${lang}-${category}`;
-            if (!posts[key]) posts[key] = [];
-            posts[key].push(postData);
-            savePosts();
-            updateCategoryCounts();
+        // 카테고리 렌더링
+        function renderCategories() {
+            Object.keys(CATEGORIES).forEach(lang => {
+                const container = document.getElementById(lang + '-categories');
+                container.innerHTML = '';
+
+                CATEGORIES[lang].forEach(category => {
+                    const div = document.createElement('div');
+                    div.className = 'category-item';
+                    div.textContent = category;
+                    div.onclick = () => showPosts(lang, category);
+                    container.appendChild(div);
+                });
+            });
         }
 
         // 언어 그룹 토글
-        function toggleLanguage(lang) {
-            const title = document.querySelector(`.language-title[onclick="toggleLanguage('${lang}')"]`);
-            const list = title.nextElementSibling;
-
-            title.classList.toggle('collapsed');
-            list.style.display = list.style.display === 'none' ? 'block' : 'none';
+        function toggleLanguage(event, lang) {
+            event.target.classList.toggle('collapsed');
+            const list = event.target.nextElementSibling;
+            list.style.display = list.style.display === 'none' ? 'block' : 'block';
         }
 
         // 게시글 목록 표시
@@ -421,9 +427,6 @@
             const key = `${lang}-${category}`;
             const categoryPosts = posts[key] || [];
 
-            currentView = { lang, category };
-
-            // 활성 카테고리 표시
             document.querySelectorAll('.category-item').forEach(item => {
                 item.classList.remove('active');
             });
@@ -431,7 +434,7 @@
 
             let html = `
                 <div class="post-list">
-                    <div class="list-title">${languages[lang].label} > ${category}</div>
+                    <div class="list-title">${LABELS[lang]} > ${category}</div>
             `;
 
             if (categoryPosts.length === 0) {
@@ -439,7 +442,7 @@
             } else {
                 categoryPosts.forEach((post, index) => {
                     html += `
-                        <div class="post-item" onclick="showPostDetail('${key}', ${index}, event)">
+                        <div class="post-item" onclick="showPostDetail('${key}', ${index})">
                             <div class="post-title">${post.title}</div>
                             <div class="post-meta">${post.date || '-'}</div>
                         </div>
@@ -452,11 +455,8 @@
         }
 
         // 게시글 상세 표시
-        function showPostDetail(key, index, event) {
-            event.stopPropagation();
-
+        function showPostDetail(key, index) {
             const post = posts[key][index];
-            const [lang, category] = key.split('-');
 
             let html = `
                 <div class="post-detail">
@@ -467,9 +467,7 @@
             if (post.summary) {
                 html += `
                     <div class="section-title">요약</div>
-                    <div class="summary-box">
-                        ${post.summary}
-                    </div>
+                    <div class="summary-box">${post.summary}</div>
                 `;
             }
 
@@ -491,17 +489,4 @@
                         <div class="translation">
                             <div class="content-label">한국어 번역</div>
                             <div class="content-text">${post.translation}</div>
-                        </div>
-                    `;
-                }
-
-                html += '</div>';
-            }
-
-            html += '</div>';
-
-            document.getElementById('contentArea').innerHTML = html;
-        }
-
-        // 페이지 로드 시 초기화
-        window.addEventListe
+                     
